@@ -4,17 +4,21 @@ import TodoForm from './TodoForm.jsx'
 import { useState } from 'react'
 
 function App() {
-  const [newTodo, setNewTodo] = useState(42)
+  const [todoList, setTodoList] = useState([])
   const todos = [
     {id: 1, title: "review resources"},
     {id: 2, title: "take notes"},
     {id: 3, title: "code out app"},
   ]
+  
+  const handleAddTodo = (newTodo) => {
+    setTodoList([...todoList, newTodo])
+  }
+  
   return (
     <div>
       <h1>Todo List</h1>
-      <TodoForm />
-      <p>{newTodo}</p>
+      <TodoForm onAddTodo={handleAddTodo} />
       <TodoList />
     </div>
   )
