@@ -11,7 +11,11 @@ function App() {
     {id: 3, title: "code out app"},
   ]
   
-  const handleAddTodo = (newTodo) => {
+  const handleAddTodo = (title) => {
+    const newTodo = {
+      id: Date.now(), // Create a unique ID using timestamp
+      title: title
+    }
     setTodoList([...todoList, newTodo])
   }
   
@@ -19,7 +23,7 @@ function App() {
     <div>
       <h1>Todo List</h1>
       <TodoForm onAddTodo={handleAddTodo} />
-      <TodoList />
+      <TodoList todoList={todoList} />
     </div>
   )
 }
