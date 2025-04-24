@@ -13,17 +13,28 @@ function App() {
   
   const handleAddTodo = (title) => {
     const newTodo = {
-      id: Date.now(), // Create a unique ID using timestamp
-      title: title
+      id: Date.now(),
+      title: title,
+      isCompleted: false
     }
     setTodoList([...todoList, newTodo])
+  }
+  
+  const completeTodo = (id) => {
+    const updatedTodos = todoList.map((todo) => {
+      if (todo.id === id) {
+        return { ...todo, isCompleted: true }
+      }
+      return todo
+    })
+    setTodoList(updatedTodos)
   }
   
   return (
     <div>
       <h1>Todo List</h1>
       <TodoForm onAddTodo={handleAddTodo} />
-      <TodoList todoList={todoList} />
+      <TodoList todoList={todoList} onCompleteTodo={completeTodo} />
     </div>
   )
 }
