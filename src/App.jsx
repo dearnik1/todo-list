@@ -1,15 +1,52 @@
 import './App.css'
 import TodoList from './features/TodoList/TodoList.jsx'
 import TodoForm from './features/TodoForm.jsx'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function App() {
   const [todoList, setTodoList] = useState([])
-  const todos = [
-    {id: 1, title: "review resources"},
-    {id: 2, title: "take notes"},
-    {id: 3, title: "code out app"},
-  ]
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
+
+  const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
+  const token = `Bearer ${import.meta.env.VITE_PAT}`;
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      setIsLoading(true);
+      const options = {
+        method: "GET",
+        headers: {
+          "Authorization": token
+        }
+      };
+
+      try {
+        const resp = await fetch(url, options);
+        if (!resp.ok) {
+          throw new Error(resp.message);
+        }
+
+        const { records } = await resp.json();
+        const fetchedTodos = records.map(record => {
+          const todo = {
+            id: record.id,
+            ...record.fields
+          };
+          if (!todo.isCompleted) {
+            todo.isCompleted = false;
+          }
+          return todo;
+        });
+        setTodoList(fetchedTodos);
+      } catch (error) {
+        setErrorMessage(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTodos();
+  }, []);
   
   const handleAddTodo = (title) => {
     const newTodo = {
@@ -48,7 +85,9 @@ function App() {
         todoList={todoList} 
         onCompleteTodo={completeTodo} 
         onUpdateTodo={updateTodo}
+        isLoading={isLoading}
       />
+      {errorMessage && <p className="error">{errorMessage}</p>}
     </div>
   )
 }
