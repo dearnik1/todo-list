@@ -12,18 +12,44 @@ function App() {
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
+  // Common fetch options
+  const getFetchOptions = (method, body = null) => ({
+    method,
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json',
+    },
+    ...(body && { body: JSON.stringify(body) })
+  });
+
+  // Common error handling
+  const handleError = (error, action) => {
+    console.error(error);
+    const userFriendlyMessages = {
+      'add': 'Unable to add your todo. Please try again.',
+      'update': 'Unable to update your todo. Changes have been reverted.',
+      'complete': 'Unable to mark your todo as complete. Please try again.',
+      'fetch': 'Unable to load your todos. Please refresh the page.'
+    };
+    setErrorMessage(`${userFriendlyMessages[action] || 'Something went wrong. Please try again.'}`);
+  };
+
+  // Common state reversion
+  const revertTodoState = (originalTodo) => {
+    const revertedTodos = todoList.map((todo) => {
+      if (todo.id === originalTodo.id) {
+        return { ...originalTodo };
+      }
+      return todo;
+    });
+    setTodoList([...revertedTodos]);
+  };
+
   useEffect(() => {
     const fetchTodos = async () => {
       setIsLoading(true);
-      const options = {
-        method: "GET",
-        headers: {
-          "Authorization": token
-        }
-      };
-
       try {
-        const resp = await fetch(url, options);
+        const resp = await fetch(url, getFetchOptions('GET'));
         if (!resp.ok) {
           throw new Error(resp.message);
         }
@@ -41,7 +67,7 @@ function App() {
         });
         setTodoList(fetchedTodos);
       } catch (error) {
-        setErrorMessage(error.message);
+        handleError(error, 'fetch');
       } finally {
         setIsLoading(false);
       }
@@ -66,18 +92,9 @@ function App() {
       ],
     };
 
-    const options = {
-      method: 'POST',
-      headers: {
-        Authorization: token,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    };
-
     try {
       setIsSaving(true);
-      const resp = await fetch(url, options);
+      const resp = await fetch(url, getFetchOptions('POST', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -94,8 +111,7 @@ function App() {
       
       setTodoList([...todoList, savedTodo]);
     } catch (error) {
-      console.error(error);
-      setErrorMessage(error.message);
+      handleError(error, 'add');
     } finally {
       setIsSaving(false);
     }
@@ -116,18 +132,9 @@ function App() {
       ],
     };
 
-    const options = {
-      method: 'PATCH',
-      headers: {
-        Authorization: token,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    };
-
     try {
       setIsSaving(true);
-      const resp = await fetch(url, options);
+      const resp = await fetch(url, getFetchOptions('PATCH', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -140,15 +147,8 @@ function App() {
       });
       setTodoList(updatedTodos);
     } catch (error) {
-      console.error(error);
-      setErrorMessage(`${error.message}. Reverting todo...`);
-      const revertedTodos = todoList.map((todo) => {
-        if (todo.id === originalTodo.id) {
-          return { ...originalTodo };
-        }
-        return todo;
-      });
-      setTodoList([...revertedTodos]);
+      handleError(error, 'complete');
+      revertTodoState(originalTodo);
     } finally {
       setIsSaving(false);
     }
@@ -169,18 +169,9 @@ function App() {
       ],
     };
 
-    const options = {
-      method: 'PATCH',
-      headers: {
-        Authorization: token,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    };
-
     try {
       setIsSaving(true);
-      const resp = await fetch(url, options);
+      const resp = await fetch(url, getFetchOptions('PATCH', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -193,23 +184,16 @@ function App() {
       });
       setTodoList(updatedTodos);
     } catch (error) {
-      console.error(error);
-      setErrorMessage(`${error.message}. Reverting todo...`);
-      const revertedTodos = todoList.map((todo) => {
-        if (todo.id === originalTodo.id) {
-          return { ...originalTodo };
-        }
-        return todo;
-      });
-      setTodoList([...revertedTodos]);
+      handleError(error, 'update');
+      revertTodoState(originalTodo);
     } finally {
       setIsSaving(false);
     }
   }
   
   return (
-    <div>
-      <h1>Todo List</h1>
+    <div className="app-container">
+      <h1 className="app-title">Todo List</h1>
       <TodoForm onAddTodo={handleAddTodo} isSaving={isSaving} />
       <TodoList 
         todoList={todoList} 
@@ -218,10 +202,15 @@ function App() {
         isLoading={isLoading}
       />
       {errorMessage && (
-        <div>
-          <hr />
-          <p>{errorMessage}</p>
-          <button onClick={() => setErrorMessage("")}>Dismiss</button>
+        <div className="error-container">
+          <hr className="error-divider" />
+          <p className="error-message">{errorMessage}</p>
+          <button 
+            className="error-dismiss-button"
+            onClick={() => setErrorMessage("")}
+          >
+            Dismiss
+          </button>
         </div>
       )}
     </div>
