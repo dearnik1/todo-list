@@ -210,7 +210,12 @@ function App() {
         isLoading={isLoading}
       />
       <hr />
-      <TodosViewForm />
+      <TodosViewForm 
+        sortField={sortField}
+        setSortField={setSortField}
+        sortDirection={sortDirection}
+        setSortDirection={setSortDirection}
+      />
       {errorMessage && (
         <div className="error-container">
           <hr className="error-divider" />

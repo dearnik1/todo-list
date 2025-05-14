@@ -1,9 +1,17 @@
-function TodosViewForm() {
+function TodosViewForm({ sortField, setSortField, sortDirection, setSortDirection }) {
+  const preventRefresh = (event) => {
+    event.preventDefault();
+  };
+
   return (
-    <form>
+    <form onSubmit={preventRefresh}>
       <div>
         <label htmlFor="sort-field-select">Sort by</label>
-        <select id="sort-field-select">
+        <select 
+          id="sort-field-select" 
+          value={sortField} 
+          onChange={(event) => setSortField(event.target.value)}
+        >
           <option value="title">Title</option>
           <option value="createdTime">Time added</option>
         </select>
