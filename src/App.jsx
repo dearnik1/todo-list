@@ -1,17 +1,8 @@
 import './App.css'
 import TodoList from './features/TodoList/TodoList.jsx'
 import TodoForm from './features/TodoForm.jsx'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import TodosViewForm from './features/TodosViewForm.jsx'
-
-const encodeUrl = ({ baseUrl, sortField, sortDirection, queryString }) => {
-  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  let searchQuery = "";
-  if (queryString) {
-    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-  }
-  return encodeURI(`${baseUrl}?${sortQuery}${searchQuery}`);
-};
 
 function App() {
   const [todoList, setTodoList] = useState([])
@@ -24,6 +15,15 @@ function App() {
 
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
+
+  const encodeUrl = useCallback(() => {
+    let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+    let searchQuery = "";
+    if (queryString) {
+      searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+    }
+    return encodeURI(`${url}?${sortQuery}${searchQuery}`);
+  }, [url, sortField, sortDirection, queryString]);
 
   // Common fetch options
   const getFetchOptions = (method, body = null) => ({
@@ -62,7 +62,7 @@ function App() {
     const fetchTodos = async () => {
       setIsLoading(true);
       try {
-        const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection, queryString }), getFetchOptions('GET'));
+        const resp = await fetch(encodeUrl(), getFetchOptions('GET'));
         if (!resp.ok) {
           throw new Error(resp.message);
         }
@@ -86,7 +86,7 @@ function App() {
       }
     };
     fetchTodos();
-  }, [sortField, sortDirection, url, queryString]);
+  }, [encodeUrl]);
   
   const handleAddTodo = async (title) => {
     const newTodo = {
@@ -107,7 +107,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection, queryString }), getFetchOptions('POST', payload));
+      const resp = await fetch(encodeUrl(), getFetchOptions('POST', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -147,7 +147,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection, queryString }), getFetchOptions('PATCH', payload));
+      const resp = await fetch(encodeUrl(), getFetchOptions('PATCH', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -184,7 +184,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection, queryString }), getFetchOptions('PATCH', payload));
+      const resp = await fetch(encodeUrl(), getFetchOptions('PATCH', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
