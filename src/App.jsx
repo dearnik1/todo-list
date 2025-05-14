@@ -2,10 +2,11 @@ import './App.css'
 import TodoList from './features/TodoList/TodoList.jsx'
 import TodoForm from './features/TodoForm.jsx'
 import { useState, useEffect } from 'react'
+import TodosViewForm from './features/TodosViewForm.jsx'
 
-const encodeUrl = ({ sortField, sortDirection }) => {
+const encodeUrl = ({ baseUrl, sortField, sortDirection }) => {
   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  return encodeURI(`${url}?${sortQuery}`);
+  return encodeURI(`${baseUrl}?${sortQuery}`);
 };
 
 function App() {
@@ -56,7 +57,7 @@ function App() {
     const fetchTodos = async () => {
       setIsLoading(true);
       try {
-        const resp = await fetch(encodeUrl({ sortField, sortDirection }), getFetchOptions('GET'));
+        const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection }), getFetchOptions('GET'));
         if (!resp.ok) {
           throw new Error(resp.message);
         }
@@ -80,7 +81,7 @@ function App() {
       }
     };
     fetchTodos();
-  }, [sortField, sortDirection]);
+  }, [sortField, sortDirection, url]);
   
   const handleAddTodo = async (title) => {
     const newTodo = {
@@ -101,7 +102,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(encodeUrl({ sortField, sortDirection }), getFetchOptions('POST', payload));
+      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection }), getFetchOptions('POST', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -141,7 +142,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(encodeUrl({ sortField, sortDirection }), getFetchOptions('PATCH', payload));
+      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection }), getFetchOptions('PATCH', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -178,7 +179,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(encodeUrl({ sortField, sortDirection }), getFetchOptions('PATCH', payload));
+      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection }), getFetchOptions('PATCH', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -208,6 +209,8 @@ function App() {
         onUpdateTodo={updateTodo}
         isLoading={isLoading}
       />
+      <hr />
+      <TodosViewForm />
       {errorMessage && (
         <div className="error-container">
           <hr className="error-divider" />
