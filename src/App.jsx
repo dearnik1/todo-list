@@ -4,9 +4,13 @@ import TodoForm from './features/TodoForm.jsx'
 import { useState, useEffect } from 'react'
 import TodosViewForm from './features/TodosViewForm.jsx'
 
-const encodeUrl = ({ baseUrl, sortField, sortDirection }) => {
+const encodeUrl = ({ baseUrl, sortField, sortDirection, queryString }) => {
   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  return encodeURI(`${baseUrl}?${sortQuery}`);
+  let searchQuery = "";
+  if (queryString) {
+    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+  }
+  return encodeURI(`${baseUrl}?${sortQuery}${searchQuery}`);
 };
 
 function App() {
@@ -16,6 +20,7 @@ function App() {
   const [isSaving, setIsSaving] = useState(false)
   const [sortField, setSortField] = useState("createdTime")
   const [sortDirection, setSortDirection] = useState("desc")
+  const [queryString, setQueryString] = useState("");
 
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
@@ -57,7 +62,7 @@ function App() {
     const fetchTodos = async () => {
       setIsLoading(true);
       try {
-        const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection }), getFetchOptions('GET'));
+        const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection, queryString }), getFetchOptions('GET'));
         if (!resp.ok) {
           throw new Error(resp.message);
         }
@@ -81,7 +86,7 @@ function App() {
       }
     };
     fetchTodos();
-  }, [sortField, sortDirection, url]);
+  }, [sortField, sortDirection, url, queryString]);
   
   const handleAddTodo = async (title) => {
     const newTodo = {
@@ -102,7 +107,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection }), getFetchOptions('POST', payload));
+      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection, queryString }), getFetchOptions('POST', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -142,7 +147,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection }), getFetchOptions('PATCH', payload));
+      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection, queryString }), getFetchOptions('PATCH', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -179,7 +184,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection }), getFetchOptions('PATCH', payload));
+      const resp = await fetch(encodeUrl({ baseUrl: url, sortField, sortDirection, queryString }), getFetchOptions('PATCH', payload));
       if (!resp.ok) {
         throw new Error(resp.message);
       }
@@ -215,6 +220,8 @@ function App() {
         setSortField={setSortField}
         sortDirection={sortDirection}
         setSortDirection={setSortDirection}
+        queryString={queryString} 
+        setQueryString={setQueryString} 
       />
       {errorMessage && (
         <div className="error-container">
