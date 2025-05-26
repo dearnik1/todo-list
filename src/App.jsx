@@ -4,6 +4,7 @@ import TodoList from './features/TodoList/TodoList.jsx'
 import TodoForm from './features/TodoForm.jsx'
 import { useState, useEffect, useCallback } from 'react'
 import TodosViewForm from './features/TodosViewForm.jsx'
+import logo from './assets/react.svg'
 
 function App() {
   const [todoList, setTodoList] = useState([])
@@ -207,7 +208,10 @@ function App() {
   
   return (
     <div className={styles.appContainer}>
-      <h1 className={styles.appTitle}>Todo List</h1>
+      <div className={styles.logoTitleWrapper}>
+        <img src={logo} alt="Logo" className={styles.logoImg} />
+        <h1 className={styles.appTitle}>Todo List</h1>
+      </div>
       <TodoForm onAddTodo={handleAddTodo} isSaving={isSaving} />
       <TodoList 
         todoList={todoList} 
