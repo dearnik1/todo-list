@@ -1,4 +1,5 @@
 import './App.css'
+import styles from './App.module.css'
 import TodoList from './features/TodoList/TodoList.jsx'
 import TodoForm from './features/TodoForm.jsx'
 import { useState, useEffect, useCallback } from 'react'
@@ -205,8 +206,8 @@ function App() {
   }
   
   return (
-    <div className="app-container">
-      <h1 className="app-title">Todo List</h1>
+    <div className={styles.appContainer}>
+      <h1 className={styles.appTitle}>Todo List</h1>
       <TodoForm onAddTodo={handleAddTodo} isSaving={isSaving} />
       <TodoList 
         todoList={todoList} 
@@ -224,7 +225,7 @@ function App() {
         setQueryString={setQueryString} 
       />
       {errorMessage && (
-        <div className="error-container">
+        <div className={styles.errorContainer}>
           <hr className="error-divider" />
           <p className="error-message">{errorMessage}</p>
           <button 
