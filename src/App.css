@@ -1,39 +1,35 @@
-.app-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
+/* Foundation Styles */
+:root {
+  --primary-color: #2c3e50;
+  --secondary-color: #3498db;
+  --background-color: #f5f6fa;
+  --error-color: #e74c3c;
+  --success-color: #2ecc71;
+  --text-color: #2c3e50;
+  --border-color: #dcdde1;
+}
+
+body {
+  margin: 0;
+  padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
-.app-title {
-  color: #2c3e50;
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2.5rem;
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.error-container {
-  margin-top: 2rem;
-  padding: 1rem;
-  background-color: #fff5f5;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: var(--primary-color);
 }
 
-.error-divider {
-  border: none;
-  border-top: 1px solid #fed7d7;
-  margin: 0.5rem 0;
-}
-
-.error-message {
-  color: #c53030;
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-}
-
-.error-dismiss-button {
-  background-color: #c53030;
+button {
+  background-color: var(--secondary-color);
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -43,11 +39,28 @@
   transition: background-color 0.2s;
 }
 
-.error-dismiss-button:hover {
-  background-color: #9b2c2c;
+button:hover {
+  background-color: #2980b9;
 }
 
-.error-dismiss-button:focus {
+button:disabled {
+  background-color: var(--border-color);
+  cursor: not-allowed;
+}
+
+input[type="text"],
+input[type="search"] {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="search"]:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(197, 48, 48, 0.3);
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
