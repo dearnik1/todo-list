@@ -197,6 +197,12 @@ function App() {
             handleAddTodo={handleAddTodo}
             completeTodo={completeTodo}
             updateTodo={updateTodo}
+            sortField={sortField}
+            setSortField={setSortField}
+            sortDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            queryString={queryString}
+            setQueryString={setQueryString}
           />
         } />
         <Route path="/about" element={<About />} />

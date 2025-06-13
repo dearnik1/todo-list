@@ -9,12 +9,14 @@ function TodosPage({
   dispatch, 
   handleAddTodo, 
   completeTodo, 
-  updateTodo 
+  updateTodo,
+  sortField,
+  setSortField,
+  sortDirection,
+  setSortDirection,
+  queryString,
+  setQueryString
 }) {
-  const [sortField, setSortField] = useState("createdTime");
-  const [sortDirection, setSortDirection] = useState("desc");
-  const [queryString, setQueryString] = useState("");
-
   return (
     <div className={styles.appContainer}>
       <TodoForm onAddTodo={handleAddTodo} isSaving={todoState.isSaving} />
