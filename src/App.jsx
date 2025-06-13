@@ -10,12 +10,17 @@ import {
   actions as todoActions,
   initialState as initialTodosState,
 } from './reducers/todos.reducer';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import TodosPage from './pages/TodosPage.jsx';
+import Header from './shared/Header/Header.jsx';
 
 function App() {
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
   const [sortField, setSortField] = useState("createdTime")
   const [sortDirection, setSortDirection] = useState("desc")
   const [queryString, setQueryString] = useState("");
+  const [title, setTitle] = useState('Todo List');
+  const location = useLocation();
 
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
@@ -169,40 +174,32 @@ function App() {
     }
   }
   
+  useEffect(() => {
+    if (location.pathname === '/') {
+      setTitle('Todo List');
+    } else if (location.pathname === '/about') {
+      setTitle('About');
+    } else {
+      setTitle('Not Found');
+    }
+  }, [location]);
+
   return (
     <div className={styles.appContainer}>
-      <div className={styles.logoTitleWrapper}>
-        <img src={logo} alt="Logo" className={styles.logoImg} />
-        <h1 className={styles.appTitle}>Todo List</h1>
-      </div>
-      <TodoForm onAddTodo={handleAddTodo} isSaving={todoState.isSaving} />
-      <TodoList 
-        todoList={todoState.todoList} 
-        onCompleteTodo={completeTodo} 
-        onUpdateTodo={updateTodo}
-        isLoading={todoState.isLoading}
-      />
-      <hr />
-      <TodosViewForm 
-        sortField={sortField}
-        setSortField={setSortField}
-        sortDirection={sortDirection}
-        setSortDirection={setSortDirection}
-        queryString={queryString} 
-        setQueryString={setQueryString} 
-      />
-      {todoState.errorMessage && (
-        <div className={styles.errorContainer}>
-          <hr className="error-divider" />
-          <p className="error-message">{todoState.errorMessage}</p>
-          <button 
-            className="error-dismiss-button"
-            onClick={() => dispatch({ type: todoActions.clearError })}
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
+      <Header title={title} />
+      <Routes>
+        <Route path="/" element={
+          <TodosPage
+            todoState={todoState}
+            dispatch={dispatch}
+            handleAddTodo={handleAddTodo}
+            completeTodo={completeTodo}
+            updateTodo={updateTodo}
+          />
+        } />
+        <Route path="/about" element={<h1>About</h1>} />
+        <Route path="*" element={<h1>Not Found</h1>} />
+      </Routes>
     </div>
   )
 }
