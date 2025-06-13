@@ -13,6 +13,8 @@ import {
 import { Routes, Route, useLocation } from 'react-router-dom';
 import TodosPage from './pages/TodosPage.jsx';
 import Header from './shared/Header/Header.jsx';
+import About from './pages/About.jsx';
+import NotFound from './pages/NotFound.jsx';
 
 function App() {
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
@@ -197,8 +199,8 @@ function App() {
             updateTodo={updateTodo}
           />
         } />
-        <Route path="/about" element={<h1>About</h1>} />
-        <Route path="*" element={<h1>Not Found</h1>} />
+        <Route path="/about" element={<About />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   )

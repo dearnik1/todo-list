@@ -1,11 +1,12 @@
 .header {
   padding: 1rem;
   position: relative;
+  min-height: 80px; /* Ensure enough space for nav and title */
 }
 
 .title {
   text-align: center;
-  margin: 0;
+  margin: 2.5rem 0 0 0; /* Add top margin to push title below nav */
   color: #333;
 }
 
